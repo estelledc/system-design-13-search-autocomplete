@@ -156,11 +156,11 @@ export class PostgresAutocompleteStore {
         await client.query('COMMIT');
         return result;
       }
-      const [ledger, policy, active] = await Promise.all([
-        client.query('SELECT last_committed_sequence FROM event_ledger WHERE singleton = true'),
-        client.query('SELECT last_version FROM block_policy WHERE singleton = true'),
-        client.query('SELECT snapshot_id FROM active_snapshot WHERE singleton = true'),
-      ]);
+      const ledger = await client.query(
+        'SELECT last_committed_sequence FROM event_ledger WHERE singleton = true',
+      );
+      const policy = await client.query('SELECT last_version FROM block_policy WHERE singleton = true');
+      const active = await client.query('SELECT snapshot_id FROM active_snapshot WHERE singleton = true');
       const inserted = await client.query(
         `INSERT INTO snapshot_builds (
            id, build_key, request_digest, watermark, policy_version, expected_active_snapshot_id,
@@ -204,18 +204,16 @@ export class PostgresAutocompleteStore {
         await client.query('COMMIT');
         return { changed: false, build: mapBuild(row) };
       }
-      const [aggregates, blocks] = await Promise.all([
-        client.query(
-          `SELECT normalized_query AS term, count(*)::bigint AS count
-           FROM search_events WHERE sequence <= $1
-           GROUP BY normalized_query ORDER BY normalized_query`,
-          [row.watermark],
-        ),
-        client.query(
-          'SELECT normalized_query FROM blocked_terms WHERE version <= $1 ORDER BY normalized_query',
-          [row.policy_version],
-        ),
-      ]);
+      const aggregates = await client.query(
+        `SELECT normalized_query AS term, count(*)::bigint AS count
+         FROM search_events WHERE sequence <= $1
+         GROUP BY normalized_query ORDER BY normalized_query`,
+        [row.watermark],
+      );
+      const blocks = await client.query(
+        'SELECT normalized_query FROM blocked_terms WHERE version <= $1 ORDER BY normalized_query',
+        [row.policy_version],
+      );
       const artifact = buildPrefixArtifact(aggregates.rows, {
         minCount: row.min_count,
         topK: row.top_k,

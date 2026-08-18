@@ -112,7 +112,7 @@ async function ingest(baseUrl, phrase, count) {
 }
 
 async function suggestions(baseUrl) {
-  const response = await request(baseUrl, '/v1/suggestions?q=ap&limit=5');
+  const response = await request(baseUrl, '/v1/suggestions?q=a&limit=5');
   assert.equal(response.status, 200);
   assert.equal(response.headers.get('cache-control'), 'private, no-store');
   return response.json();
