@@ -2,9 +2,12 @@
 
 ## Current receipt
 
-The corrected implementation gate passed at commit `846227850dceba04092d7a730513f75891cad858` in GitHub Actions run
-[`32171098277`](https://github.com/estelledc/system-design-13-search-autocomplete/actions/runs/32171098277). All Node 22.23.2,
+The identity-safe rewrite preserved every existing tree, message, and timestamp while mapping the five commits in order: `ab6449b4344cfa3f46c6ce2595d6959e5af2ce3e` → `2e9f78dde1cd77bdf901273c729b599d5d0415ad`, `7c444d76261d3d7fbc65156d75fd49f2a695227d` → `81e0652522308f7d390b1b6bbdb228385f00d132`, `4adb403d686d1b07b50e06955e58dd621bd5c231` → `53c371eaf6f2ad0048a87f26abb8d9c0b949e2ab`, `846227850dceba04092d7a730513f75891cad858` → `a9573a397e81b876fe139b3ef459aaf5343892eb`, and `4037f36ac82ebbf7437b9b67c57aa5eedbc8babe` → `8f702324e28aa778557b9eafdd0a35d20476050a`.
+
+The corrected implementation gate passed the tree now at commit `a9573a397e81b876fe139b3ef459aaf5343892eb` in historical pre-rewrite GitHub Actions run [`32171098277`](https://github.com/estelledc/system-design-13-search-autocomplete/actions/runs/32171098277). The run remains bound to the old commit object. All Node 22.23.2,
 24.19.0, and 26.7.0 jobs used PostgreSQL 17.6 and completed the same full gate.
+
+Current reachable `main` uses the repository owner's GitHub noreply identity. Rewritten baseline `8f702324e28aa778557b9eafdd0a35d20476050a` passed [CI run 32225592030](https://github.com/estelledc/system-design-13-search-autocomplete/actions/runs/32225592030) on Node 22, 24, and 26 with PostgreSQL 17.6 and the full quality gate.
 
 | Gate | Current result | What it proves |
 |---|---|---|
@@ -38,11 +41,11 @@ Node-version comparisons nor production-capacity promises.
 
 The first implementation run
 [`32170756550`](https://github.com/estelledc/system-design-13-search-autocomplete/actions/runs/32170756550) at
-`4adb403d686d1b07b50e06955e58dd621bd5c231` is intentionally retained. Static policy, 10 pure tests, the audit, and all 6 real
+`53c371eaf6f2ad0048a87f26abb8d9c0b949e2ab` is intentionally retained as the tree-equivalent rewritten commit. Static policy, 10 pure tests, the audit, and all 6 real
 PostgreSQL integration tests passed in every job. The process smoke then failed because it queried prefix `ap` while expecting
 `avocado`, which can only match prefix `a`.
 
-Commit `846227850dceba04092d7a730513f75891cad858` corrected the smoke query to `a`. It also serialized queries issued through one
+Commit `a9573a397e81b876fe139b3ef459aaf5343892eb` corrected the smoke query to `a`. It also serialized queries issued through one
 transaction client, removing the `node-postgres` deprecation warning without weakening any assertion. The next matrix run was
 green across all three runtimes.
 
